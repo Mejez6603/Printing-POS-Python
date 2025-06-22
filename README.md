@@ -125,3 +125,78 @@ To create a portable executable (e.g., `main.exe` on Windows) that can be run on
   * **User Management:** Add login functionality for different staff members with roles.
   * **Basic Inventory Tracking:** Monitor stock levels of paper and ink.
 
+## Changelog
+
+### v1.0.0 - Initial Release (2025-06-22)
+
+* **Core Functionality:**
+    * Implemented full transaction input and management.
+    * Added dynamic "Add Item" to temporary list.
+    * Enabled confirmation of transactions to main record table.
+    * Persistent data storage in `database/records.csv`.
+* **Reporting:**
+    * Quick sales summary on the main transaction screen.
+    * Detailed Sales Report window with date filtering.
+    * Aggregated metrics (Total Sales, Total Pages, Total Transactions).
+    * Breakdown of pages by Paper Type (Short, Long, A4, PhotoPaper) and Color (Black, Colored).
+    * Export Sales Report to CSV.
+* **User Interface & Experience:**
+    * Clean and intuitive Tkinter GUI.
+    * Automatic "Total" calculation in transaction input.
+    * Item editing and deletion from pending transaction list.
+    * Application window icon and sidebar logo integration.
+* **Maintenance & Portability:**
+    * Configured project for PyInstaller packaging (`--onedir` for portable folder distribution).
+    * "Reset Records" functionality to clear all stored data.
+    * Robust path handling for data files in packaged app.
+
+---
+## System Requirements
+
+### For Portable Standalone Application
+
+* **Operating System:** Windows 7 or newer (Windows 10/11 recommended).
+    * (Note: Linux/macOS executables can be built with appropriate GitHub Actions runners, but are not bundled in the default Windows build.)
+* **Hardware:** A modern computer with sufficient RAM (e.g., 2GB+ RAM, 1GHz+ processor) for general desktop application usage.
+* **Disk Space:** Approximately [e.g., 100MB - 300MB] for the extracted application folder, plus space for your `records.csv` data (which will grow over time).
+
+### For Development Setup (Running from Source Code)
+
+* **Operating System:** Windows, macOS, or Linux.
+* **Python:** Python 3.6 or newer (Python 3.9+ recommended).
+* **Pip:** Python's package installer.
+* **Required Python Libraries:**
+    * `Pillow`
+    * `tkinter` (usually built-in with Python)
+    * (Optionally `pyinstaller` if you plan to build executables yourself)
+
+## Troubleshooting
+
+### Common Issues and Solutions
+
+* **"ModuleNotFoundError: No module named 'PIL'"** (When running from source)
+    * **Reason:** The `Pillow` library is not installed.
+    * **Solution:** Open your terminal/command prompt and run `pip install Pillow`.
+* **Data not refreshing or showing zeros in Sales Reports/Quick Summary (in bundled app)**
+    * **Reason:** The application might be having trouble locating `records.csv`. This specific issue was addressed in recent updates.
+    * **Solution:** Ensure you are using the latest version of the application code. If you rebuilt with PyInstaller, ensure `sales_report.py` uses the updated pathing `base_dir = os.path.dirname(os.path.abspath(__file__))`.
+* **"Add Item" button is disabled.**
+    * **Reason:** Not all required input fields (Paper Type, Color, Pages, Price/Page, Total) in the transaction input section are filled.
+    * **Solution:** Fill in all the fields. The button will enable automatically.
+* **Application launches, but crashes shortly after (in bundled app).**
+    * **Reason:** This can be due to various reasons, including missing data files or environmental issues not captured during packaging.
+    * **Solution:**
+        1.  Ensure you used the `--add-data` flags correctly during PyInstaller packaging for `database`, `logo.png`, and `your_app_icon.png`.
+        2.  Try running PyInstaller without `--noconsole` first to see if any errors are printed to the console window that appears.
+* **My data disappeared after I moved the portable app folder!**
+    * **Reason:** If you moved the *extracted* application folder (e.g., `dist/main/`) to a new location, the `database/records.csv` file inside it moved along with it. If you had saved data, it should still be there.
+    * **Solution:** Ensure you're running the `main.exe` from the correct, complete portable application folder that contains your `database` subfolder with your `records.csv`.
+
+## Acknowledgments
+
+* Special thanks to the open-source community for developing Python, Tkinter, Pillow, and PyInstaller.
+* Nooby
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
