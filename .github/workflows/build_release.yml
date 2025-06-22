@@ -1,0 +1,83 @@
+name: Build & Release Portable App
+
+# This workflow runs when a new release is published
+on:
+  release:
+    types: [published] # Trigger when a new release is published on GitHub
+
+jobs:
+  build-windows:
+    runs-on: windows-latest # Use a Windows runner to build the .exe
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4 # Checkout the repository code
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.9' # Or '3.x' where x is your specific Python minor version (e.g., '3.10', '3.11')
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install Pillow pyinstaller
+
+    - name: Build with PyInstaller
+      run: |
+        # Adjust 'your_app_icon.png' to your actual window icon filename.
+        # These paths are relative to the root of your repository.
+        pyinstaller --noconsole --add-data "database;database" --add-data "logo.png;." --add-data "your_app_icon.png;." "main.py"
+      # 'working-directory' is important to ensure the command runs from the repo root
+      working-directory: ${{ github.workspace }}
+
+    - name: Create portable zip archive
+      # Use PowerShell's Compress-Archive to zip the output folder
+      run: |
+        Compress-Archive -Path dist/main -DestinationPath PrintingSystem-portable-${{ github.ref_name }}.zip
+      shell: pwsh # Specify PowerShell for this step
+
+    - name: Upload Release Asset
+      # This action uploads the created zip file to the GitHub Release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is automatically provided by GitHub
+      with:
+        # upload_url is available from the 'release' event trigger
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: PrintingSystem-portable-${{ github.ref_name }}.zip
+        # asset_name uses the tag name (e.g., v1.0.0)
+        asset_name: PrintingSystem-portable-${{ github.ref_name }}.zip
+        asset_content_type: application/zip
+
+  # Optional: You can add another job here to build for Linux (ubuntu-latest runner) or macOS (macos-latest runner)
+  # if you want cross-platform executables. This would require separate build steps and PyInstaller arguments.
+  # Example Linux job (uncomment and add if needed):
+  # build-linux:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+  #     - name: Set up Python
+  #       uses: actions/setup-python@v5
+  #       with:
+  #         python-version: '3.9'
+  #     - name: Install dependencies
+  #       run: |
+  #         python -m pip install --upgrade pip
+  #         pip install Pillow pyinstaller
+  #     - name: Build with PyInstaller
+  #       run: |
+  #         pyinstaller --noconsole --add-data "database:database" --add-data "logo.png:." --add-data "your_app_icon.png:." "main.py"
+  #     - name: Create portable tar.gz archive
+  #       run: |
+  #         tar -czvf PrintingSystem-portable-${{ github.ref_name }}-linux.tar.gz -C dist main
+  #     - name: Upload Release Asset
+  #       uses: actions/upload-release-asset@v1
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #       with:
+  #         upload_url: ${{ github.event.release.upload_url }}
+  #         asset_path: PrintingSystem-portable-${{ github.ref_name }}-linux.tar.gz
+  #         asset_name: PrintingSystem-portable-${{ github.ref_name }}-linux.tar.gz
+  #         asset_content_type: application/gzip
