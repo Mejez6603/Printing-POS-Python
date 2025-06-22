@@ -1,9 +1,10 @@
-![](images/GUI1.png) ![](images/GUI2.png) 
 # Printing Shop Transaction System
 
 ## Overview
 
 This is a simple, standalone desktop application developed using Python and Tkinter for managing printing shop transactions. It allows users to record printing jobs, view a history of all transactions, and generate basic sales reports for different periods. The system is designed for ease of use and portability, storing all data in a local CSV file.
+
+![](images/GUI1.png) ![](images/GUI2.png) 
 
 ## Features
 
