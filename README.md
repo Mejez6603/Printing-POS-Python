@@ -196,6 +196,10 @@ To create a portable executable (e.g., `main.exe` on Windows) that can be run on
 
 * Special thanks to the open-source community for developing Python, Tkinter, Pillow, and PyInstaller.
 * Nooby
+* Doc
+* Firelink
+* SBBC PC
+* To my dog and cat
 
 ## License
 
